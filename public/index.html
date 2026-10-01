@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket 測試</title>
+</head>
+<body>
+    <h2>WebSocket 即時測試</h2>
+    <input type="text" id="messageInput" placeholder="輸入訊息...">
+    <button onclick="sendMessage()">傳送</button>
+    <div id="output" style="margin-top: 20px; white-space: pre-line;"></div>
+
+    <script>
+        // 自動判斷目前是本地端還是線上部署環境，動態決定用 ws:// 或 wss://
+        const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+        const wsUrl = protocol + window.location.host;
+        
+        const socket = new WebSocket(wsUrl);
+        const output = document.getElementById('output');
+
+        socket.onopen = () => {
+            output.innerHTML += '[系統] 連線成功！\n';
+        };
+
+        socket.onmessage = (event) => {
+            output.innerHTML += `${event.data}\n`;
+        };
+
+        socket.onclose = () => {
+            output.innerHTML += '[系統] 連線已斷開。\n';
+        };
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            if (input.value) {
+                socket.send(input.value);
+                output.innerHTML += `[發送] ${input.value}\n`;
+                input.value = '';
+            }
+        }
+    </script>
+</body>
+</html>
